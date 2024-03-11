@@ -31,7 +31,7 @@ def home():
 @app.route('/get-quiz', methods=['GET'])
 def get_quiz():
     try:
-        range_name = 'Sheet1!B2:C16'  # Adjusted for 15 questions
+        range_name = 'Sheet1!B2:D16'  # Adjusted for 15 questions
         result = service.spreadsheets().values().get(spreadsheetId=QUIZ_SPREADSHEET_ID, range=range_name).execute()
         values = result.get('values', [])
 
