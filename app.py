@@ -6,6 +6,8 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import random
 import datetime
+import pytz
+
 
 app = Flask(__name__)
 
@@ -59,8 +61,9 @@ def submit_score():
         content = request.get_json()
         name = content['name']
         score = content['score']
+        seoul_timezone = pytz.timezone('Asia/Seoul')
         
-        time_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Current time
+       time_now = datetime.datetime.now(seoul_timezone).strftime("%Y-%m-%d %H:%M:%S")
 
         # Prepare the data to be inputted: [Name, Score, Timestamp]
         values = [[name, score, time_now]]
