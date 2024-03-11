@@ -48,7 +48,7 @@ def get_quiz():
         random.shuffle(words)
         
         
-        quiz_data = {'words': words, 'sentences': sentences, 'word_answer_mapping': word_answer_mapping}
+        quiz_data = {'words': words, 'sentences': sentences, 'asnwers': answers}
         
         return jsonify(quiz_data), 200
     except Exception as e:
