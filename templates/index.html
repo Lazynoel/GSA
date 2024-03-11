@@ -12,8 +12,9 @@
         .blank { display: inline-block; width: 100px; height: 20px; background-color: #fff; border: 2px solid #000; vertical-align: middle; text-align: center; line-height: 20px; }
         .highlight { border-color: #f90; background-color: #ffc; }
         .hovered { background-color: #e0e0e0; }
-        h1 { text-align: center; } 
+        h1,3 { text-align: center; } 
         h2 { text-align: right; } 
+        .name-input-container { text-align: right; }
     </style>
 </head>
 <body>
@@ -21,12 +22,14 @@
 <div class="container">
     <h1>Daily QUIZ</h1>
     <h2>Enter Your Name</h2>
-    <input type="text" id="name" placeholder="Your Name">
-
-    <h2>Word Choices</h2>
+    <div class="name-input-container"> <!-- Add custom class to align input container -->
+        <input type="text" id="name" placeholder="Your Name">
+    </div>
+    
+    <h3>Word Choices</h3>
     <div id="wordChoices" class="word-box"></div>
 
-    <h2>Fill in the Blanks</h2>
+    <h3>Fill in the Blanks</h3>
     <div id="sentences"></div>
 
     <button id="checkAnswers">Check Answers</button>
