@@ -1,4 +1,3 @@
-from flask import Flask, request, jsonify, render_template
 import os
 import base64
 import json
@@ -7,18 +6,20 @@ from googleapiclient.discovery import build
 import random
 import datetime
 
-
 app = Flask(__name__)
 
 # Google Sheets setup
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 QUIZ_SPREADSHEET_ID = '1r2SedejaixElPsnKf5EDycHdnYeUmHC5mMYJAg1TkjI'
 SCORES_SPREADSHEET_ID =  '1Ub7netOHTXfjIuSuNIri7DDq4vYTmaD3hjf9amq-lxw'
-SERVICE_ACCOUNT_FILE = r'C:\Users\lazyn\my_flask_project\keys\mythic-byway-415505-8e23a1e224f7.json'
 
-credentials_base64 = os.environ.get("GOOGLE_CREDENTIALS_BASE64")
-credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
-credentials = service_account.Credentials.from_service_account_info(json.loads(credentials_json), scopes=SCOPES)
+# Check if the environment variable is set
+if 'GOOGLE_CREDENTIALS_BASE64' in os.environ:
+    credentials_base64 = os.environ['GOOGLE_CREDENTIALS_BASE64']
+    credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
+    credentials = service_account.Credentials.from_service_account_info(json.loads(credentials_json), scopes=SCOPES)
+else:
+    raise ValueError("The GOOGLE_CREDENTIALS_BASE64 environment variable is not set.")
 
 service = build('sheets', 'v4', credentials=credentials)
 @app.route('/')
