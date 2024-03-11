@@ -105,7 +105,7 @@
         }
     }).data('correct-answer', function() {
         const word = $(this).find('span').text().trim();
-        return word_answer_mapping[word];
+        return answers[word];
     });
 }
 
