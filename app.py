@@ -38,8 +38,8 @@ def get_quiz():
         if not values:
             return jsonify({'error': 'No quiz data found.'}), 404
 
-        words = [row[0] for row in values]
-        sentences = [row[1] for row in values]
+        words = [row[2] for row in values]
+        sentences = [row[2] for row in values]
 
         random.shuffle(sentences)
         random.shuffle(words)
