@@ -41,86 +41,122 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
 <script>
     $(function() {
-        fetch('/get-quiz') // Use GET request
+    fetch('/get-quiz') // Use GET request
+    .then(response => response.json())
+    .then(data => {
+        // Assign numbers to each word corresponding to the sentences
+        const wordsWithIndices = assignWordIndices(data.sentences, data.words);
+
+        // Shuffle sentences and words separately
+        shuffleArray(data.sentences);
+        shuffleArray(wordsWithIndices);
+
+        // Populate words
+        wordsWithIndices.forEach(({ word, index }) => {
+            $('#wordChoices').append(`<div class="word" data-word-index="${index}">${word}</div>`);
+        });
+
+        // Populate sentences with blanks
+        data.sentences.forEach((sentence, index) => {
+            const sentenceWithBox = sentence.replace(/___+/g, `<div class="blank" data-sentence-index="${index}"></div>`);
+            $('#sentences').append(`<div class="sentence">${index + 1}. ${sentenceWithBox}</div>`);
+        });
+
+        makeWordsDraggable();
+        makeBlanksDroppable();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to fetch quiz data.');
+    });
+
+    $('#checkAnswers').on('click', function() {
+        const name = $('#name').val().trim();
+        if (!name) {
+            alert("Please enter your name before checking answers.");
+            return;
+        }
+
+        let score = 0; // Initialize score
+        $('.blank').each(function() {
+            const userAnswer = $(this).text().trim();
+            const sentenceIndex = $(this).data('sentence-index');
+            const wordIndex = $(this).data('word-index');
+            const correctAnswer = getCorrectAnswer(sentenceIndex, wordIndex); // Get correct answer based on indices
+            if (userAnswer === correctAnswer) {
+                $(this).css('background-color', 'lightgreen');
+                score++; // Increment score for correct answer
+            } else {
+                $(this).css('background-color', 'salmon');
+            }
+        });
+        alert(`Your score is ${score} out of 15`); // Display score in a popup
+        submitScore(name, score);
+    });
+
+    function makeWordsDraggable() {
+        $(".word").draggable({
+            helper: "clone",
+            revert: "invalid"
+        });
+    }
+
+    function makeBlanksDroppable() {
+        $(".blank").droppable({
+            accept: ".word",
+            classes: {
+                "ui-droppable-active": "highlight",
+                "ui-droppable-hover": "hovered"
+            },
+            drop: function(event, ui) {
+                $(this).html(`<span>${ui.draggable.text()}</span>`).removeClass("highlight hovered");
+            }
+        });
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function assignWordIndices(sentences, words) {
+        const wordsWithIndices = [];
+        let wordIndex = 0;
+        sentences.forEach(sentence => {
+            const wordsInSentence = sentence.match(/\w+/g);
+            wordsInSentence.forEach(() => {
+                wordsWithIndices.push({ word: words[wordIndex], index: wordIndex });
+                wordIndex++;
+            });
+        });
+        return wordsWithIndices;
+    }
+
+    function getCorrectAnswer(sentenceIndex, wordIndex) {
+        // You need to implement the logic to get the correct answer based on the shuffled indices
+        // This function should return the correct answer for the given sentenceIndex and wordIndex
+        // For example, you can use the shuffled indices to retrieve the correct answer from the original data
+    }
+
+    function submitScore(name, score) {
+        fetch('/submit-score', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name, score: score })
+        })
         .then(response => response.json())
         .then(data => {
-            // Populate words
-            data.words.forEach(word => {
-                $('#wordChoices').append(`<div class="word">${word}</div>`);
-            });
-
-            // Populate sentences with blanks
-            data.sentences.forEach((sentence, index) => {
-                const sentenceWithBox = sentence.replace(/___+/g, `<div class="blank"></div>`);
-                $('#sentences').append(`<div class="sentence">${index + 1}. ${sentenceWithBox}</div>`);
-            });
-
-            makeWordsDraggable();
-            makeBlanksDroppable();
+            alert('Score submitted successfully!');
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Failed to fetch quiz data.');
+            alert('Failed to submit score.');
         });
+    }
+});
 
-        $('#checkAnswers').on('click', function() {
-            const name = $('#name').val().trim();
-            if (!name) {
-                alert("Please enter your name before checking answers.");
-                return;
-            }
-
-            let score = 0; // Initialize score
-            $('.blank').each(function() {
-                const userAnswer = $(this).text().trim();
-                const correctAnswer = $(this).data('answer');
-                if (userAnswer === correctAnswer) {
-                    $(this).css('background-color', 'lightgreen');
-                    score++; // Increment score for correct answer
-                } else {
-                    $(this).css('background-color', 'salmon');
-                }
-            });
-            alert(`Your score is ${score} out of 15`); // Display score in a popup
-            submitScore(name, score);
-        });
-
-        function makeWordsDraggable() {
-            $(".word").draggable({
-                helper: "clone",
-                revert: "invalid"
-            });
-        }
-
-        function makeBlanksDroppable() {
-            $(".blank").droppable({
-                accept: ".word",
-                classes: {
-                    "ui-droppable-active": "highlight",
-                    "ui-droppable-hover": "hovered"
-                },
-                drop: function(event, ui) {
-                    $(this).html(`<span>${ui.draggable.text()}</span>`).removeClass("highlight hovered");
-                }
-            });
-        }
-
-        function submitScore(name, score) {
-            fetch('/submit-score', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name, score: score }) // 
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert('Score submitted successfully!');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to submit score.');
-            });
-        }
-    });
 </script>
 
 </body>
