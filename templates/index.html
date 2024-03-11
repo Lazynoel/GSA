@@ -66,26 +66,27 @@ $(function() {
     });
 
     $('#checkAnswers').on('click', function() {
-        const name = $('#name').val().trim();
-        if (!name) {
-            alert("Please enter your name before checking answers.");
-            return;
-        }
+    const name = $('#name').val().trim();
+    if (!name) {
+        alert("Please enter your name before checking answers.");
+        return;
+    }
 
-        let score = 0; // Initialize score
-        $('.blank').each(function() {
-            const userAnswer = $(this).text().trim();
-            const correctAnswer = $(this).data('answer');
-            if (userAnswer === correctAnswer) {
-                $(this).css('background-color', 'lightgreen');
-                score++; // Increment score for correct answer
-            } else {
-                $(this).css('background-color', 'salmon');
-            }
-        });
-        alert(`Your score is ${score} out of ${data.sentences.length}`); // Display score in a popup
-        submitScore(name, score);
+    let score = 0; // Initialize score
+    $('.blank').each(function() {
+        const userAnswer = $(this).text().trim();
+        const correctAnswer = $(this).data('answer');
+        if (userAnswer === correctAnswer) {
+            $(this).css('background-color', 'lightgreen');
+            score++; // Increment score for correct answer
+        } else {
+            $(this).css('background-color', 'salmon');
+        }
     });
+    // Now, call submitScore here but don't wait to show the initial score popup
+    submitScore(name, score);
+    alert(`Your score is ${score} out of ${$('.blank').length}`); // Display score in a popup immediately after scoring
+});
 
     function makeWordsDraggable() {
         $(".word").draggable({
@@ -108,20 +109,22 @@ $(function() {
     }
 
      function submitScore(name, score) {
-            fetch('/submit-score', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name, score: score }) // 
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert('Score submitted successfully!');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to submit score.');
-            });
-        }
+    fetch('/submit-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, score: score })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Move the alert here if it's dependent on the submitScore completion
+        console.log('Score submitted successfully!');
+        alert(`Score submitted successfully! Your score is ${score}.`);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to submit score.');
+    });
+}
     });
 </script>
 
