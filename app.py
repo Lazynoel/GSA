@@ -35,21 +35,16 @@ def get_quiz():
         result = service.spreadsheets().values().get(spreadsheetId=QUIZ_SPREADSHEET_ID, range=range_name).execute()
         values = result.get('values', [])
 
-        
         if not values:
             return jsonify({'error': 'No quiz data found.'}), 404
 
         words = [row[0] for row in values]
         sentences = [row[1] for row in values]
-        answers = [row[2] for row in values]
 
-        word_answer_mapping = dict(zip(words, answers))
-        
+        random.shuffle(sentences)
         random.shuffle(words)
         
-        
-        quiz_data = {'words': words, 'sentences': sentences, 'asnwers': answers}
-        
+        quiz_data = {'words': words, 'sentences': sentences}
         return jsonify(quiz_data), 200
     except Exception as e:
         print(e)
