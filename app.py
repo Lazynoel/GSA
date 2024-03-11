@@ -40,11 +40,11 @@ def get_quiz():
 
         words = [row[0] for row in values]
         sentences = [row[1] for row in values]
-
-        random.shuffle(sentences)
+        answers = [row[2] for row in values]
+        
         random.shuffle(words)
         
-        quiz_data = {'words': words, 'sentences': sentences}
+        quiz_data = {'words': words, 'sentences': sentences, 'answers': answers}
         return jsonify(quiz_data), 200
     except Exception as e:
         print(e)
