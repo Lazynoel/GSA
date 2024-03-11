@@ -41,19 +41,21 @@
 <!-- Include jQuery UI Touch Punch for mobile compatibility after jQuery UI -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
 <script>
+    <script>
     $(function() {
-        fetch('/get-quiz') // Use GET request
+        fetch('/get-quiz')
         .then(response => response.json())
         .then(data => {
-            // Populate words
-            data.words.forEach(word => {
-                $('#wordChoices').append(`<div class="word">${word}</div>`);
+            data.words.forEach((word, index) => {
+                $('#wordChoices').append(`<div class="word" data-id="${word.id}">${word.text}</div>`);
             });
 
-            // Populate sentences with blanks
-            data.sentences.forEach((sentence, index) => {
-                const sentenceWithBox = sentence.replace(/___+/g, `<div class="blank"></div>`);
-                $('#sentences').append(`<div class="sentence">${index + 1}. ${sentenceWithBox}</div>`);
+            data.sentences.forEach(sentence => {
+                let sentenceHtml = sentence.text;
+                sentence.blanks.forEach(blank => {
+                    sentenceHtml = sentenceHtml.replace('___', `<div class="blank" data-expected-id="${blank.id}"></div>`);
+                });
+                $('#sentences').append(`<div class="sentence">${sentenceHtml}</div>`);
             });
 
             makeWordsDraggable();
@@ -62,28 +64,6 @@
         .catch(error => {
             console.error('Error:', error);
             alert('Failed to fetch quiz data.');
-        });
-
-        $('#checkAnswers').on('click', function() {
-            const name = $('#name').val().trim();
-            if (!name) {
-                alert("Please enter your name before checking answers.");
-                return;
-            }
-
-            let score = 0; // Initialize score
-            $('.blank').each(function() {
-                const userAnswer = $(this).text().trim();
-                const correctAnswer = $(this).data('answer');
-                if (userAnswer === correctAnswer) {
-                    $(this).css('background-color', 'lightgreen');
-                    score++; // Increment score for correct answer
-                } else {
-                    $(this).css('background-color', 'salmon');
-                }
-            });
-            alert(`Your score is ${score} out of 15`); // Display score in a popup
-            submitScore(name, score);
         });
 
         function makeWordsDraggable() {
@@ -101,16 +81,34 @@
                     "ui-droppable-hover": "hovered"
                 },
                 drop: function(event, ui) {
-                    $(this).html(`<span>${ui.draggable.text()}</span>`).removeClass("highlight hovered");
+                    const droppedWordId = ui.draggable.data('id');
+                    const expectedWordId = $(this).data('expected-id');
+                    if (droppedWordId === expectedWordId) {
+                        $(this).html(ui.draggable.text()).removeClass("highlight hovered").data('answer', true);
+                    } else {
+                        $(this).addClass("incorrect"); // Visual cue for incorrect drop
+                    }
                 }
             });
         }
+
+        $('#checkAnswers').click(function() {
+            const name = $('#name').val().trim();
+            if (!name) {
+                alert("Please enter your name before checking answers.");
+                return;
+            }
+
+            let score = $('.blank[data-answer="true"]').length; // Count correctly answered blanks
+            alert(`Your score is ${score} out of ${$('.blank').length}`);
+            submitScore(name, score);
+        });
 
         function submitScore(name, score) {
             fetch('/submit-score', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name, score: score }) // 
+                body: JSON.stringify({ name: name, score: score })
             })
             .then(response => response.json())
             .then(data => {
@@ -123,6 +121,7 @@
         }
     });
 </script>
+
 
 </body>
 </html>
