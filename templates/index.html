@@ -101,10 +101,13 @@
                     "ui-droppable-hover": "hovered"
                 },
                 drop: function(event, ui) {
-                    $(this).html(`<span>${ui.draggable.text()}</span>`).removeClass("highlight hovered");
-                }
-            });
+            $(this).html(`<span>${ui.draggable.text()}</span>`).removeClass("highlight hovered");
         }
+    }).data('correct-answer', function() {
+        const word = $(this).find('span').text().trim();
+        return word_answer_mapping[word];
+    });
+}
 
         function submitScore(name, score) {
             fetch('/submit-score', {
