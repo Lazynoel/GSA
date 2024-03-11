@@ -42,7 +42,7 @@ def get_quiz():
         sentences = [row[1] for row in values]
 
         random.shuffle(sentences)
-        random.shuffle(words)
+        
         
         quiz_data = {'words': words, 'sentences': sentences}
         return jsonify(quiz_data), 200
