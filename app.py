@@ -41,7 +41,6 @@ def get_quiz():
         words = [row[0] for row in values]
         sentences = [row[1] for row in values]
 
-        random.shuffle(words)
         random.shuffle(sentences)
 
         quiz_data = {'words': words, 'sentences': sentences}
