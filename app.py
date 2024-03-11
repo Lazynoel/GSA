@@ -45,7 +45,7 @@ def get_quiz():
 
         word_answer_mapping = dict(zip(words, answers))
         
-        random.shuffle(sentences)
+        random.shuffle(words)
         
         
         quiz_data = {'words': words, 'sentences': sentences, 'word_answer_mapping': word_answer_mapping}
