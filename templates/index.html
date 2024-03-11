@@ -107,20 +107,24 @@ $(function() {
         });
     }
 
-    function submitScore(name, score) {
-        fetch('/submit-score', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: name, score: score })
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert('Score submitted successfully!');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to submit score.');
-        });
-    }
-});
+     function submitScore(name, score) {
+            fetch('/submit-score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, score: score }) // 
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Score submitted successfully!');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to submit score.');
+            });
+        }
+    });
 </script>
+
+</body>
+</html>
+
