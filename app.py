@@ -27,7 +27,10 @@ service = build('sheets', 'v4', credentials=credentials)
 @app.route('/')
 def home():
     return render_template('index.html')
-
+@app.route('/quiz1')
+def quiz1():
+    return render_template('quiz1.html')
+    
 @app.route('/get-quiz', methods=['GET'])
 def get_quiz():
     try:
