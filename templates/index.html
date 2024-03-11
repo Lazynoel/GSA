@@ -74,7 +74,7 @@
             let score = 0; // Initialize score
             $('.blank').each(function() {
                 const userAnswer = $(this).text().trim();
-                const correctAnswer = $(this).data('correct-answer');
+                const correctAnswer = $(this).data('answer');
                 if (userAnswer === correctAnswer) {
                     $(this).css('background-color', 'lightgreen');
                     score++; // Increment score for correct answer
@@ -101,13 +101,10 @@
                     "ui-droppable-hover": "hovered"
                 },
                 drop: function(event, ui) {
-            $(this).html(`<span>${ui.draggable.text()}</span>`).removeClass("highlight hovered");
+                    $(this).html(`<span>${ui.draggable.text()}</span>`).removeClass("highlight hovered");
+                }
+            });
         }
-    }).data('correct-answer', function() {
-        const word = $(this).find('span').text().trim();
-        return answers[word];
-    });
-}
 
         function submitScore(name, score) {
             fetch('/submit-score', {
