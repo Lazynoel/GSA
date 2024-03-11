@@ -74,7 +74,7 @@
             let score = 0; // Initialize score
             $('.blank').each(function() {
                 const userAnswer = $(this).text().trim();
-                const correctAnswer = $(this).data('answer');
+                const correctAnswer = $(this).data('correct-answer');
                 if (userAnswer === correctAnswer) {
                     $(this).css('background-color', 'lightgreen');
                     score++; // Increment score for correct answer
