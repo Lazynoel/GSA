@@ -63,7 +63,7 @@ def submit_score():
         score = content['score']
         seoul_timezone = pytz.timezone('Asia/Seoul')
         
-       time_now = datetime.datetime.now(seoul_timezone).strftime("%Y-%m-%d %H:%M:%S")
+        time_now = datetime.datetime.now(seoul_timezone).strftime("%Y-%m-%d %H:%M:%S")
 
         # Prepare the data to be inputted: [Name, Score, Timestamp]
         values = [[name, score, time_now]]
