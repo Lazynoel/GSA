@@ -24,7 +24,7 @@
 <div class="container">
     <h1>Daily QUIZ</h1>
     <h2>Enter Your Name</h2>
-    <div class="name-input-container"> <!-- Add custom class to align input container -->
+    <div class="name-input-container"> 
         <input type="text" id="name" placeholder="Your Name">
     </div>
     
@@ -78,12 +78,12 @@ $(function() {
         const correctAnswer = $(this).data('answer');
         if (userAnswer === correctAnswer) {
             $(this).css('background-color', 'lightgreen');
-            score++; // Increment score for correct answer
+            score++; 
         } else {
             $(this).css('background-color', 'salmon');
         }
     });
-    // Now, call submitScore here but don't wait to show the initial score popup
+    
     submitScore(name, score);
     alert(`Your score is ${score} out of ${$('.blank').length}`); // Display score in a popup immediately after scoring
 });
@@ -116,7 +116,7 @@ $(function() {
     })
     .then(response => response.json())
     .then(data => {
-        // Move the alert here if it's dependent on the submitScore completion
+        
         console.log('Score submitted successfully!');
         alert(`Score submitted successfully! Your score is ${score}.`);
     })
