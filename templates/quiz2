@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reading Expert 5 VOCA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <style>
+        body { font-family: "태백은하수체",Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .word-box, .sentence { padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        .word { margin: 5px; padding: 5px; background-color: #f0f0f0; border: 1px solid #ddd; border-radius: 3px; cursor: pointer; display: inline-block; }
+        .blank { display: inline-block; width: 100px; height: 20px; background-color: #fff; border: 2px solid #000; vertical-align: middle; text-align: center; line-height: 20px; }
+        .highlight { border-color: #f90; background-color: #ffc; }
+        .hovered { background-color: #e0e0e0; }
+        h1 { text-align: center; font-weight: bold; font-size: 35px; }
+        h2 { text-align: right;font-size: 20px; } 
+        h3 { text-align: center; font-weight: bold; font-size: 25px; }
+        .name-input-container { text-align: right; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Reading Expert 5 VOCA "Fill in the Blank"</h1>
+    <h2>Enter Your Name</h2>
+    <div class="name-input-container"> 
+        <input type="text" id="name" placeholder="Your Name">
+    </div>
+    
+    <h3>Word Choices</h3>
+    <div id="wordChoices" class="word-box"></div>
+
+    <h3>Fill in the Blanks</h3>
+    <div id="sentences"></div>
+
+    <button id="checkAnswers">Check Answers</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<!-- Include jQuery UI Touch Punch for mobile compatibility after jQuery UI -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+<script>
+$(function() {
+    fetch('/get-quiz') // Use GET request
+    .then(response => response.json())
+    .then(data => {
+        // Populate words
+        data.words.forEach(word => {
+            $('#wordChoices').append(`<div class="word">${word}</div>`);
+        });
+
+        // Populate sentences with blanks and associate each blank with the correct answer
+        data.sentences.forEach((sentence, index) => {
+            const sentenceWithBlank = sentence.replace(/___+/g, `<div class="blank" data-answer="${data.answers[index]}"></div>`);
+            $('#sentences').append(`<div class="sentence">${index + 1}. ${sentenceWithBlank}</div>`);
+        });
+
+        makeWordsDraggable();
+        makeBlanksDroppable();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to fetch quiz data.');
+    });
+
+    $('#checkAnswers').on('click', function() {
+    const name = $('#name').val().trim();
+    if (!name) {
+        alert("Please enter your name before checking answers.");
+        return;
+    }
+
+    let score = 0; // Initialize score
+    $('.blank').each(function() {
+        const userAnswer = $(this).text().trim();
+        const correctAnswer = $(this).data('answer');
+        if (userAnswer === correctAnswer) {
+            $(this).css('background-color', 'lightgreen');
+            score++; 
+        } else {
+            $(this).css('background-color', 'salmon');
+        }
+    });
+    
+    submitScore(name, score);
+    alert(`Your score is ${score} out of ${$('.blank').length}`); // Display score in a popup immediately after scoring
+});
+
+    function makeWordsDraggable() {
+        $(".word").draggable({
+            helper: "clone",
+            revert: "invalid"
+        });
+    }
+
+    function makeBlanksDroppable() {
+        $(".blank").droppable({
+            accept: ".word",
+            classes: {
+                "ui-droppable-active": "highlight",
+                "ui-droppable-hover": "hovered"
+            },
+            drop: function(event, ui) {
+                $(this).text(ui.draggable.text()).removeClass("highlight hovered");
+            }
+        });
+    }
+
+     function submitScore(name, score) {
+    fetch('/submit-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, score: score })
+    })
+    .then(response => response.json())
+    .then(data => {
+        
+        console.log('Score submitted successfully!');
+        alert(`Submitted successfully! `);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to submit score.');
+    });
+}
+    });
+</script>
+
+</body>
+</html>
