@@ -37,10 +37,10 @@ def quiz1():
 def quiz1():
     return render_template('quiz2.html')
     
-@app.route('/get-quiz', methods=['GET'])
-def get_quiz():
-     try:
-        # Example: Adjust the range or spreadsheet based on the quiz_id
+@app.route('/get-quiz/<quiz_id>', methods=['GET'])  # Added the route parameter quiz_id
+def get_quiz(quiz_id):  # Added the function parameter quiz_id
+    try:
+        # Adjust the range or spreadsheet based on the quiz_id
         if quiz_id == 'quiz1':
             range_name = 'Sheet1!B2:D16'  # Quiz 1 range
         elif quiz_id == 'quiz2':
@@ -57,14 +57,15 @@ def get_quiz():
         words = [row[0] for row in values]
         sentences = [row[1] for row in values]
         answers = [row[2] for row in values]
-        
+
         random.shuffle(words)
-        
+
         quiz_data = {'words': words, 'sentences': sentences, 'answers': answers}
         return jsonify(quiz_data), 200
     except Exception as e:
         print(e)
         return jsonify({'error': 'Failed to fetch quiz data.'}), 500
+
 
 @app.route('/submit-score', methods=['POST'])
 def submit_score():
