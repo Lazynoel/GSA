@@ -36,14 +36,16 @@
 
     <button id="checkAnswers">Check Answers</button>
 </div>
-
+<script>
+    var quizId = 'quiz2'; // Define the quiz ID for this quiz page
+</script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <!-- Include jQuery UI Touch Punch for mobile compatibility after jQuery UI -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
 <script>
 $(function() {
-    fetch('/get-quiz') // Use GET request
+    fetch(`/get-quiz/${quizId}`) // Use GET request
     .then(response => response.json())
     .then(data => {
         // Populate words
