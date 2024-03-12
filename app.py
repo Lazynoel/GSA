@@ -33,6 +33,10 @@ def home():
 def quiz1():
     return render_template('quiz1.html')
     
+@app.route('/quiz2')
+def quiz1():
+    return render_template('quiz2.html')
+    
 @app.route('/get-quiz', methods=['GET'])
 def get_quiz():
     try:
