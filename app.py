@@ -34,7 +34,7 @@ def quiz1():
     return render_template('quiz1.html')
     
 @app.route('/quiz2')
-def quiz1():
+def quiz2():
     return render_template('quiz2.html')
     
 @app.route('/get-quiz/<quiz_id>', methods=['GET'])  # Added the route parameter quiz_id
